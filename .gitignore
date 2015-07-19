@@ -1,0 +1,20 @@
+# cmake
+build*/
+
+# kdevelop
+*.kdev4
+.kdev4/
+
+# qtcreator
+CMakeLists.txt.user
+
+# clion
+.idea/
+
+# sublime
+*.sublime-*
+
+# temporaries
+*~
+*.swp
+
