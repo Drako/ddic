@@ -12,6 +12,7 @@
 #include <functional>
 #include <memory>
 #include <utility>
+#include <type_traits>
 
 #include "ddic_creation_policy.hxx"
 
@@ -58,6 +59,8 @@ namespace ddic
     class default_factory<Type, creation_policy::always_new>
         : public abstract_factory
     {
+        static_assert(std::is_default_constructible<Type>::value, "Type must be default constructible!");
+
     public:
         virtual ~default_factory() = default; ///< Default virtual destructor.
 
@@ -78,6 +81,8 @@ namespace ddic
     class default_factory<Type, creation_policy::always_same>
         : public abstract_factory
     {
+        static_assert(std::is_default_constructible<Type>::value, "Type must be default constructible!");
+
     public:
         virtual ~default_factory() = default; ///< Default virtual destructor.
 
@@ -118,6 +123,8 @@ namespace ddic
     class prototype_factory<Type, creation_policy::always_new>
         : public abstract_factory
     {
+        static_assert(std::is_copy_constructible<Type>::value, "Type must be copy constructible!");
+
     public:
         /**
          * \brief takes a prototype instance and stores it for later use.
@@ -150,6 +157,8 @@ namespace ddic
     class prototype_factory<Type, creation_policy::always_same>
         : public abstract_factory
     {
+        static_assert(std::is_copy_constructible<Type>::value, "Type must be copy constructible!");
+
     public:
         /**
          * \brief takes a prototype instance and creates a copy for later use.

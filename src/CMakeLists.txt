@@ -1,5 +1,5 @@
-set(CMAKE_INCLUDE_CURRENT_DIR ON)
 configure_file(ddic_config.hxx.in ddic_config.hxx)
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 add_library(ddic STATIC
     ddic_container.cxx
@@ -9,6 +9,7 @@ add_library(ddic STATIC
     ddic_factory.hxx
     ddic_plugin.hxx
     ddic_register_proxy.hxx
+    ddic.hxx
     ${CMAKE_CURRENT_BINARY_DIR}/ddic_config.hxx
 )
 add_library(ddic::lib ALIAS ddic)
@@ -46,6 +47,7 @@ install(
         ddic_creation_policy.hxx
         ddic_factory.hxx
         ddic_plugin.hxx
+        ddic.hxx
         ${CMAKE_CURRENT_BINARY_DIR}/ddic_config.hxx
     DESTINATION
         include
