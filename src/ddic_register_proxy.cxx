@@ -1,0 +1,20 @@
+/*************************************************************
+ * Copyright © 2015, Felix Bytow <felix.bytow@googlemail.com *
+ *                                                           *
+ * See the file COPYING for copying permissions.             *
+ *************************************************************/
+
+#include "ddic_container.hxx"
+
+namespace ddic
+{
+    register_proxy::register_proxy(std::shared_ptr<abstract_factory> const & p, container & c)
+        : p_(p)
+        , c_(c)
+    {}
+
+    register_proxy::register_proxy(register_proxy && src)
+        : p_(std::move(src.p_))
+        , c_(src.c_)
+    {}
+}

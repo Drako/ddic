@@ -3,9 +3,12 @@ configure_file(ddic_config.hxx.in ddic_config.hxx)
 
 add_library(ddic STATIC
     ddic_container.cxx
+    ddic_register_proxy.cxx
     ddic_container.hxx
-    ddic_factory.cxx
+    ddic_creation_policy.hxx
     ddic_factory.hxx
+    ddic_plugin.hxx
+    ddic_register_proxy.hxx
     ${CMAKE_CURRENT_BINARY_DIR}/ddic_config.hxx
 )
 add_library(ddic::lib ALIAS ddic)
@@ -13,6 +16,10 @@ target_compile_features(ddic
     PUBLIC
         cxx_auto_type
         cxx_decltype
+        cxx_defaulted_functions
+        cxx_deleted_functions
+        cxx_final
+        cxx_override
         cxx_lambdas
         cxx_nullptr
         cxx_range_for
@@ -22,6 +29,11 @@ target_compile_features(ddic
         cxx_trailing_return_types
         cxx_variadic_templates
 )
+if(UNIX)
+    target_link_libraries(ddic
+        PRIVATE dl
+    )
+endif(UNIX)
 
 install(
     TARGETS ddic
@@ -31,7 +43,9 @@ install(
 install(
     FILES
         ddic_container.hxx
+        ddic_creation_policy.hxx
         ddic_factory.hxx
+        ddic_plugin.hxx
         ${CMAKE_CURRENT_BINARY_DIR}/ddic_config.hxx
     DESTINATION
         include

@@ -1,0 +1,25 @@
+#pragma once
+
+/*************************************************************
+ * Copyright © 2015, Felix Bytow <felix.bytow@googlemail.com *
+ *                                                           *
+ * See the file COPYING for copying permissions.             *
+ *************************************************************/
+ 
+#ifndef DDIC_CONFIG_HXX
+#define DDIC_CONFIG_HXX
+
+#define DDIC_BUILD_TYPE "@CMAKE_BUILD_TYPE@"
+#define DDIC_INSTALL_PREFIX "@CMAKE_INSTALL_PREFIX@"
+
+#if defined(_WIN32)
+#   define DDIC_WINDOWS
+#elif defined(__gnu_linux__)
+#   define DDIC_LINUX
+#endif
+
+#if defined(_MSC_VER)
+#   define DDIC_MSVC
+#endif
+
+#endif // DDIC_CONFIG_HXX
