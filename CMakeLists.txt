@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 cmake_policy(SET CMP0048 NEW)
 project(ddic VERSION 0.1.1)
+set(PROJECT_DESCRIPTION "Drako's DI Container for C++11")
 
 option(WITH_TESTS "build the unit tests" OFF)
 if(WITH_TESTS)
@@ -10,4 +11,13 @@ endif(WITH_TESTS)
 add_subdirectory(contrib)
 add_subdirectory(src)
 add_subdirectory(tests)
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    configure_file(Doxyfile.in Doxyfile)
+    add_custom_target(doc "${DOXYGEN_EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/Doxyfile"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+        COMMENT "Generating documentation with Doxygen." VERBATIM
+    )
+endif(DOXYGEN_FOUND)
 
