@@ -10,6 +10,7 @@
 #define DDIC_PLUGIN_HXX
 
 #include "ddic_config.hxx"
+#include "ddic_container.hxx"
 
 #ifdef DDIC_WINDOWS
 #   ifdef DDIC_MSVC
@@ -17,10 +18,10 @@
 #   else
 #       define DDIC_EXPORT __attribute__((dllexport))
 #   endif
-#   define DDICC_REGISTER_TYPES(C) \
+#   define DDIC_REGISTER_TYPES(C) \
         extern "C" bool DDIC_EXPORT ddic_register_types(ddic::container * C)
 #else
-#   define DDICC_REGISTER_TYPES(C) \
+#   define DDIC_REGISTER_TYPES(C) \
         extern "C" void ddic_register_types(ddic::container *); \
         extern "C" struct \
         { \

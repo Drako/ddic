@@ -20,8 +20,13 @@ namespace ddic
         register_proxy(std::shared_ptr<abstract_factory> const & p, container & c);
         register_proxy(register_proxy && src);
 
+        register_proxy & as(std::string const & what);
+
         template <typename Type>
-        register_proxy & as();
+        register_proxy & as()
+        {
+            return as(typeid(Type).name());
+        }
 
     private:
         std::shared_ptr<abstract_factory> p_;

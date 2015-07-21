@@ -17,4 +17,10 @@ namespace ddic
         : p_(std::move(src.p_))
         , c_(src.c_)
     {}
+
+    register_proxy & register_proxy::as(std::string const & what)
+    {
+        c_.factories_[what] = p_;
+        return *this;
+    }
 }

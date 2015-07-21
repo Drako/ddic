@@ -15,7 +15,6 @@
 #include <memory>
 #include <string>
 #include <type_traits>
-#include <typeindex>
 #include <unordered_map>
 #include <vector>
 
@@ -45,7 +44,7 @@ namespace ddic
             -> typename std::enable_if<std::is_default_constructible<Type>::value, register_proxy>::type
         {
             auto factory = std::make_shared<default_factory<Type, Policy>>();
-            factories_[std::type_index(typeid(Type))] = factory;
+            factories_[typeid(Type).name()] = factory;
             return register_proxy(factory, *this);
         }
 
@@ -55,18 +54,7 @@ namespace ddic
             -> typename std::enable_if<std::is_copy_constructible<Type>::value, register_proxy>::type
         {
             auto factory = std::make_shared<prototype_factory<Type, Policy>>(proto);
-            factories_[std::type_index(typeid(Type))] = factory;
-            return register_proxy(factory, *this);
-        }
-
-        // types with injection friendly constructors
-        template <typename Type, creation_policy Policy = creation_policy::always_new, typename... Types>
-        register_proxy register_type(inject<Types...> const &)
-        {
-            auto factory = std::make_shared<functor_factory<container, Type, Policy>>([](container & c) {
-                return new Type(c.resolve<Types>()...);
-            }, *this);
-            factories_[std::type_index(typeid(Type))] = factory;
+            factories_[typeid(Type).name()] = factory;
             return register_proxy(factory, *this);
         }
 
@@ -75,8 +63,17 @@ namespace ddic
         register_proxy register_type(std::function<Type* (container &)> const & fn)
         {
             auto factory = std::make_shared<functor_factory<container, Type, Policy>>(fn, *this);
-            factories_[std::type_index(typeid(Type))] = factory;
+            factories_[typeid(Type).name()] = factory;
             return register_proxy(factory, *this);
+        }
+
+        // types with injection friendly constructors
+        template <typename Type, creation_policy Policy = creation_policy::always_new, typename... Types>
+        register_proxy register_type(inject<Types...> const &)
+        {
+            return register_type<Type, Policy>([](container & c) {
+                return new Type(c.resolve<Types>()...);
+            });
         }
 
         // types with injection AND a autowire type
@@ -87,10 +84,10 @@ namespace ddic
         }
 
         template <typename Type>
-        std::shared_ptr<Type> resolve()
+        std::shared_ptr<Type> resolve(std::string const & name = typeid(Type).name())
         {
             // try resolving it here
-            auto it = factories_.find(std::type_index(typeid(Type)));
+            auto it = factories_.find(name);
             if (it != factories_.end())
                 return std::static_pointer_cast<Type>(it->second->create());
 
@@ -107,16 +104,9 @@ namespace ddic
 
     private:
         std::weak_ptr<container> parent_;
-        std::unordered_map<std::type_index, std::shared_ptr<abstract_factory>> factories_;
+        std::unordered_map<std::string, std::shared_ptr<abstract_factory>> factories_;
         friend class register_proxy;
     };
-
-    template <typename Type>
-    register_proxy & register_proxy::as()
-    {
-        c_.factories_[std::type_index(typeid(Type))] = p_;
-        return *this;
-    }
 }
 
 #endif // DDIC_CONTAINER_HXX
