@@ -35,6 +35,7 @@ if(UNIX)
         PRIVATE dl
     )
 endif(UNIX)
+set_property(TARGET ddic PROPERTY POSITION_INDEPENDENT_CODE ON)
 
 install(
     TARGETS ddic

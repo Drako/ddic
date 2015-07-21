@@ -44,6 +44,13 @@ namespace ddic
 #ifdef DDIC_LINUX
         std::string fullname = "lib" + filename + ".so";
         auto lib = dlopen(fullname.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+        if (!lib)
+        {
+            // explicitely try current directory
+            fullname = "./" + fullname;
+            lib = dlopen(fullname.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+        }
+            
         if (lib)
         {
             auto data = (ddic_plugin_data*)dlsym(lib, "ddic_plugin_data");

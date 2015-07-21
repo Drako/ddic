@@ -22,12 +22,12 @@
         extern "C" bool DDIC_EXPORT ddic_register_types(ddic::container * C)
 #else
 #   define DDIC_REGISTER_TYPES(C) \
-        extern "C" void ddic_register_types(ddic::container *); \
+        extern "C" bool ddic_register_types(ddic::container *); \
         extern "C" struct \
         { \
             bool (*entry)(ddic::container *); \
         } const ddic_plugin_data = { &ddic_register_types }; \
-        extern "C" void ddic_register_types(ddic::container * C)
+        extern "C" bool ddic_register_types(ddic::container * C)
 #endif
 
 #endif // DDIC_PLUGIN_HXX

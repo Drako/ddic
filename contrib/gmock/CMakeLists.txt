@@ -8,5 +8,5 @@ target_include_directories(gmock
 )
 target_link_libraries(gmock
     PUBLIC gtest
+    PRIVATE ${CMAKE_THREAD_LIBS_INIT}
 )
-

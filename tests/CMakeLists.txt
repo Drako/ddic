@@ -38,6 +38,9 @@ if(WITH_TESTS)
     # so it needs to be built before the tests
     add_dependencies(ddic_test_app ddic::tests::plugin)
 
-    add_test(NAME ddic_test COMMAND ddic_test_app)
+    add_test(
+        NAME ddic_test
+        COMMAND ddic_test_app
+    )
 endif(WITH_TESTS)
 
