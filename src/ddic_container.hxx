@@ -6,6 +6,15 @@
  * See the file COPYING for copying permissions.             *
  *************************************************************/
 
+/**
+ * \file ddic_container.hxx
+ * \author Felix Bytow
+ * \since 0.1.1
+ * \brief The DI container.
+ * 
+ * This file contains the core component of DDIC, the ddic::container.
+ */
+
 #ifndef DDIC_CONTAINER_HXX
 #define DDIC_CONTAINER_HXX
 
@@ -20,7 +29,18 @@
 
 namespace ddic
 {
-    template <typename... Type>
+    /**
+     * \brief Little helper used for autowiring.
+     * 
+     * This is a little helper used for autowiring.
+     * Inside classes you can do:
+     * \code
+     *  // if your constructor were MyClass(std::shared_ptr<IFoo> && foo, std::shared_ptr<IBar> && bar);
+     *  // the following would be the approprite autowire typedef.
+     *  typedef ddic::inject<IFoo, IBar> autowire;
+     * \endcode
+     */
+    template <typename... Types>
     struct inject {};
 
     class container

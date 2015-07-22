@@ -5,6 +5,15 @@
  *                                                           *
  * See the file COPYING for copying permissions.             *
  *************************************************************/
+ 
+/**
+ * \file ddic_config.hxx.in
+ * \author Felix Bytow
+ * \since 0.1.1
+ * \brief Some compile time constant settings.
+ * 
+ * This file contains some constants like the DDIC version.
+ */
 
 #ifndef DDIC_CONFIG_HXX
 #define DDIC_CONFIG_HXX

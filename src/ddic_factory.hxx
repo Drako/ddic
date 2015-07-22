@@ -6,6 +6,18 @@
  * See the file COPYING for copying permissions.             *
  *************************************************************/
 
+/**
+ * \file ddic_factory.hxx
+ * \author Felix Bytow
+ * \since 0.1.1
+ * \brief Factory classes for the DI container.
+ * 
+ * This file contains all the factory classes used by ddic::container.
+ * All factories implement the ddic::abstract_factory interface which provides a create method.
+ * That method shall return a pointer to an object of a registered type.
+ * The implementation depends on the factory and the given ddic::creation_policy.
+ */
+
 #ifndef DDIC_FACTORY_HXX
 #define DDIC_FACTORY_HXX
 
@@ -30,9 +42,7 @@ namespace ddic
         virtual ~abstract_factory() = default; ///< Default virtual destructor.
         
         /**
-         * \author Felix Bytow
          * \brief creates a new instance of a registered type.
-         * \since 0.1.1
          * 
          * This method is overloaded by specific factories.
          * It returns an instance according to the registered creation_policy.
@@ -65,9 +75,7 @@ namespace ddic
         virtual ~default_factory() = default; ///< Default virtual destructor.
 
         /**
-         * \author Felix Bytow
          * \brief creates a new instance of a registered type.
-         * \since 0.1.1
          * 
          * This method simply creates a new instance of the registered type everytime it is called.
          **/
@@ -87,9 +95,7 @@ namespace ddic
         virtual ~default_factory() = default; ///< Default virtual destructor.
 
         /**
-         * \author Felix Bytow
          * \brief creates a new instance of a registered type.
-         * \since 0.1.1
          * 
          * When first called, this method creates a new instance of the registered type.
          * Subsequent calls will just return the existing instance.
@@ -138,9 +144,7 @@ namespace ddic
         virtual ~prototype_factory() = default; ///< Default virtual destructor.
 
         /**
-         * \author Felix Bytow
          * \brief creates a new instance of a registered type.
-         * \since 0.1.1
          * 
          * This method simply creates a new instance of the registered type by copying the stored prototype.
          **/
@@ -172,9 +176,7 @@ namespace ddic
         virtual ~prototype_factory() = default; ///< Default virtual destructor.
 
         /**
-         * \author Felix Bytow
          * \brief creates a new instance of a registered type.
-         * \since 0.1.1
          * 
          * This method returns a pointer to a copied prototype instance.
          **/
@@ -222,9 +224,7 @@ namespace ddic
         virtual ~functor_factory() = default; ///< Default virtual destructor.
 
         /**
-         * \author Felix Bytow
          * \brief creates a new instance of a registered type.
-         * \since 0.1.1
          * 
          * This method calls the creator function object and returns the pointer to the newly created object.
          **/
@@ -257,9 +257,7 @@ namespace ddic
         virtual ~functor_factory() = default; ///< Default virtual destructor.
 
         /**
-         * \author Felix Bytow
          * \brief creates a new instance of a registered type.
-         * \since 0.1.1
          * 
          * When first called, this method calls the creator function object to create a new object of the registered type.
          * Subsequent calls simply return a pointer to that object.
