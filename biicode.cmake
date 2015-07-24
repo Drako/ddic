@@ -1,28 +1,20 @@
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/ddic_config.hxx.in ${CMAKE_CURRENT_BINARY_DIR}/src/ddic_config.hxx)
+
 add_bii_targets()
 
 if(UNIX)
     target_link_libraries(${BII_BLOCK_TARGET} INTERFACE dl)
 endif(UNIX)
-target_compile_features(${BII_BLOCK_TARGET}
-    INTERFACE
-        cxx_auto_type
-        cxx_decltype
-        cxx_defaulted_functions
-        cxx_final
-        cxx_override
-        cxx_lambdas
-        cxx_nullptr
-        cxx_range_for
-        cxx_right_angle_brackets
-        cxx_static_assert
-        cxx_strong_enums
-        cxx_trailing_return_types
-        cxx_variadic_templates
-)
-if(NOT (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_EQUAL 18.00))
-    # cmake claims MSVC 2013 does not support deleted functions, even though the code works fine
-    # reason is, that deleted functions are not a documented feature in VS 2013
-    target_compile_features(${BII_BLOCK_TARGET} INTERFACE cxx_deleted_functions)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7.0")
+        target_compile_options(${BII_BLOCK_TARGET} INTERFACE "-std=c++0x")
+    else()
+        target_compile_options(${BII_BLOCK_TARGET} INTERFACE "-std=c++11")
+    endif()
+elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    # will have to adjust this... older clang versions may need -std=c++0x
+    # but I could not find an exact version number :-/
+    target_compile_options(${BII_BLOCK_TARGET} INTERFACE "-std=c++11")
 endif()
-configure_file(${CMAKE_CURRENT_LIST_DIR}/src/ddic_config.hxx.in ${CMAKE_CURRENT_LIST_DIR}/src/ddic_config.hxx)
+
 

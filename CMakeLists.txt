@@ -1,13 +1,13 @@
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
-cmake_policy(SET CMP0048 NEW)
-project(ddic VERSION 0.1.1)
-set(PROJECT_DESCRIPTION "Drako's DI Container for C++11")
-
 if(BIICODE)
     include("${CMAKE_HOME_DIRECTORY}/biicode.cmake")
     include("biicode.cmake")
     return()
 endif()
+
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+cmake_policy(SET CMP0048 NEW)
+project(ddic VERSION 0.1.1)
+set(PROJECT_DESCRIPTION "Drako's DI Container for C++11")
 
 option(WITH_TESTS "build the unit tests" OFF)
 if(WITH_TESTS)
