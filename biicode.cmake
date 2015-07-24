@@ -1,5 +1,8 @@
 add_bii_targets()
 
+if(UNIX)
+    target_link_libraries(${BII_BLOCK_TARGET} INTERFACE dl)
+endif(UNIX)
 target_compile_features(${BII_BLOCK_TARGET}
     INTERFACE
         cxx_auto_type
@@ -21,4 +24,5 @@ if(NOT (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT CMAKE_CXX_COMPILER_VERSION
     # reason is, that deleted functions are not a documented feature in VS 2013
     target_compile_features(${BII_BLOCK_TARGET} INTERFACE cxx_deleted_functions)
 endif()
+configure_file(${CMAKE_CURRENT_LIST_DIR}/src/ddic_config.hxx.in ${CMAKE_CURRENT_LIST_DIR}/src/ddic_config.hxx)
 
