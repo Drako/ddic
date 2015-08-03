@@ -1,5 +1,7 @@
 # Drako's DI Container
 
+[![Join the chat at https://gitter.im/Drako/ddic](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Drako/ddic?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is a light weight DI (Dependency Injection) Container written in C++11.
 It does not rely on external dependencies and avoids the use of macros.
 
