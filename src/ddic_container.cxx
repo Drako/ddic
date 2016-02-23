@@ -31,6 +31,7 @@ namespace ddic
     bool container::load_types(std::string const & filename)
     {
 #ifdef DDIC_WINDOWS
+        // TODO: deal with the case where the filename already ends in .dll
         std::string fullname = filename + ".dll";
         auto lib = LoadLibraryA(fullname.c_str());
         if (lib)
@@ -42,6 +43,7 @@ namespace ddic
 #endif // DDIC_WINDOWS
 
 #ifdef DDIC_LINUX
+        // TODO: fix this for filenames that are more complex than "foo"...
         std::string fullname = "lib" + filename + ".so";
         auto lib = dlopen(fullname.c_str(), RTLD_LAZY | RTLD_GLOBAL);
         if (!lib)

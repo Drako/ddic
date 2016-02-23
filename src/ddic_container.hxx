@@ -44,11 +44,28 @@ namespace ddic
     template <typename... Types>
     struct inject {};
 
+    /**
+     * \author Felix Bytow
+     * \brief is the actual DI container.
+     * \since 0.1.1
+     *
+     * Objects of this class manage types registered with them
+     * and help managing dependencies.
+     */
     class container
     {
     public:
-        container() {}
+        container() {} ///< Default constructor.
 
+        /**
+         * \brief Constructor taking parent container.
+         *
+         * This constructor takes a parent container.
+         * Parent containers act like scopes: If something cannot be resolved in the current container,
+         * the request is propagated to its parent.
+         *
+         * \param[in] parent The parent container.
+         */
         container(std::weak_ptr<container> && parent)
             : parent_(std::move(parent))
         {}
@@ -59,7 +76,17 @@ namespace ddic
         container & operator = (container const &) = delete;
         container & operator = (container &&) = delete;
 
-        // default constructible types
+        /**
+         * \brief Register default constructible types.
+         *
+         * This function registers the given Type with the container
+         * and assigns it to its name.
+         *
+         * \tparam[in] Type The type to be registered.
+         * \tparam[in] Policy Declare how dependencies shall be instantiated.
+         *
+         * \remark The name might be mangled, so it is a good idea to also give it an alias.
+         */
         template <typename Type, creation_policy Policy = creation_policy::always_new>
         auto register_type()
             -> typename std::enable_if<std::is_default_constructible<Type>::value, register_proxy>::type
@@ -69,7 +96,19 @@ namespace ddic
             return register_proxy(factory, *this);
         }
 
-        // copyable prototypes
+        /**
+         * \brief Register a copyable prototype.
+         *
+         * This function registers the given prototype object with the container
+         * and assigns it to its type name.
+         *
+         * \tparam[in] Type The type to be registered.
+         * \tparam[in] Policy Declare how dependencies shall be instantiated.
+         *
+         * \param[in] proto A prototype object being copied to instantiate dependencies.
+         *
+         * \remark The name might be mangled, so it is a good idea to also give it an alias.
+         */
         template <typename Type, creation_policy Policy = creation_policy::always_new>
         auto register_type(Type const & proto)
             -> typename std::enable_if<std::is_copy_constructible<Type>::value, register_proxy>::type
@@ -79,7 +118,19 @@ namespace ddic
             return register_proxy(factory, *this);
         }
 
-        // custom types we'd like to construct with a functor
+        /**
+         * \brief Register a factory functor.
+         *
+         * This function registers the given functor as a factory function for
+         * its return type. It is assigned to its return type's type name.
+         *
+         * \tparam[in] Type The type to be registered.
+         * \tparam[in] Policy Declare how dependencies shall be instantiated.
+         *
+         * \param[in] fn A factory function returning an instance of Type.
+         *
+         * \remark The name might be mangled, so it is a good idea to also give it an alias.
+         */
         template <typename Type, creation_policy Policy = creation_policy::always_new>
         register_proxy register_type(std::function<Type* (container &)> const & fn)
         {
@@ -88,7 +139,21 @@ namespace ddic
             return register_proxy(factory, *this);
         }
 
-        // types with injection friendly constructors
+        /**
+         * \brief Register a Type with injection friendly constructor.
+         *
+         * This function registers the given Type with the container
+         * and assigns it to its name.
+         * The constructor needs to take parameters like
+         *  (std::shared_ptr<A> const &, std::shared_ptr<B> const &, std::shared_ptr<C> const &)
+         *
+         * \tparam[in] Type The type to be registered.
+         * \tparam[in] Policy Declare how dependencies shall be instantiated.
+         *
+         * \param[in] inject A ddic::inject<A, B, C, ...>{}, that specifies the types to be injected.
+         *
+         * \remark The name might be mangled, so it is a good idea to also give it an alias.
+         */
         template <typename Type, creation_policy Policy = creation_policy::always_new, typename... Types>
         register_proxy register_type(inject<Types...> const &)
         {
@@ -97,13 +162,41 @@ namespace ddic
             });
         }
 
-        // types with injection AND a autowire type
+        /**
+         * \brief Register a Type with injection friendly constructor and autowire typedef.
+         *
+         * This function registers the given Type with the container
+         * and assigns it to its name.
+         * The Type needs to contain a typedef like
+         *  typedef ddic::inject<Foo, Bar, Baz> autowire;
+         * The constructor then needs to take parameters like
+         *  (std::shared_ptr<Foo> const &, std::shared_ptr<Bar> const &, std::shared_ptr<Baz> const &)
+         *
+         * \tparam[in] Type The type to be registered.
+         * \tparam[in] Policy Declare how dependencies shall be instantiated.
+         *
+         * \remark The name might be mangled, so it is a good idea to also give it an alias.
+         */
         template <typename Type, creation_policy Policy = creation_policy::always_new>
         register_proxy autowire_type()
         {
             return register_type<Type, Policy>(typename Type::autowire());
         }
 
+        /**
+         * \brief Resolve a dependency.
+         *
+         * This function checks if a factory with the provided name is known to the container
+         * or any of its parents. If so, the dependency is instantiated according to the
+         * creation policy used at registration.
+         * If no name is provided, the implementation defined type name of Type is used.
+         *
+         * \tparam[in] Type The type of the dependency to be resolved.
+         *
+         * \param[in] name The name of the dependency to be resolved.
+         *
+         * \return If the dependency was resolved, an instance of the dependency, otherwise an empty std::shared_ptr.
+         */
         template <typename Type>
         std::shared_ptr<Type> resolve(std::string const & name = typeid(Type).name())
         {
@@ -121,12 +214,23 @@ namespace ddic
             return std::shared_ptr<Type>();
         }
 
+        /**
+         * \brief Load dependencies from a plugin file.
+         *
+         * Loads dependencies from an external plugin file.
+         * Plugins are provided the current container and may register their types with it,
+         * so they can be resolved in the main program later.
+         *
+         * \param[in] filename The filename of the plugin file. Platform specific extensions are added automatically.
+         *
+         * \remark Currently only *.dll (Windows) and *.so (Unix) are supported.
+         */
         virtual bool load_types(std::string const & filename);
 
     private:
-        std::weak_ptr<container> parent_;
-        std::unordered_map<std::string, std::shared_ptr<abstract_factory>> factories_;
-        friend class register_proxy;
+        std::weak_ptr<container> parent_; ///< Pointer to the parent container.
+        std::unordered_map<std::string, std::shared_ptr<abstract_factory>> factories_; ///< All the registered factories.
+        friend class register_proxy; ///< The register_proxy is used to created aliases, so it needs to access some internals.
     };
 }
 
