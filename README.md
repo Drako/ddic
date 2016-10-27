@@ -25,3 +25,11 @@ cmake -DWITH_TESTS=ON <source dir>
 cmake --target test --config <Debug|Release> --build <build dir>
 ```
 
+## News
+
+These are the plans for the near future:
+
+ * Upgrade dependencies on compilers for C++14 support
+ * Upgrade code to use C++14 features
+ * Upgrade the versions of gtest and gmock
+ * Improve the API (might use namespaces to stay backwards compatible)
