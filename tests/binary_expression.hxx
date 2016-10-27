@@ -1,10 +1,10 @@
 #pragma once
 
-/*************************************************************
- * Copyright © 2015, Felix Bytow <felix.bytow@googlemail.com *
- *                                                           *
- * See the file COPYING for copying permissions.             *
- *************************************************************/
+/*********************************************************************
+ * Copyright Â© 2015 - 2016, Felix Bytow <felix.bytow@googlemail.com> *
+ *                                                                   *
+ * See the file COPYING for copying permissions.                     *
+ *********************************************************************/
 
 #ifndef BINARY_EXPRESSION_HXX
 #define BINARY_EXPRESSION_HXX
