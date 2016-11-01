@@ -221,11 +221,11 @@ namespace ddic
          * Plugins are provided the current container and may register their types with it,
          * so they can be resolved in the main program later.
          *
-         * \param[in] filename The filename of the plugin file. Platform specific extensions are added automatically.
+         * \param[in] name The filename of the plugin file. Platform specific extensions are added automatically.
          *
          * \remark Currently only *.dll (Windows) and *.so (Unix) are supported.
          */
-        virtual bool load_types(std::string const & filename);
+        virtual bool load_types(std::string const & name);
 
     private:
         std::weak_ptr<container> parent_; ///< Pointer to the parent container.

@@ -7,6 +7,11 @@
 #include "ddic_config.hxx"
 #include "ddic_container.hxx"
 
+#include <algorithm>
+#include <array>
+#include <functional>
+#include <iterator>
+#include <regex>
 #include <utility>
 
 #ifdef DDIC_WINDOWS
@@ -26,43 +31,78 @@ struct ddic_plugin_data
 };
 #endif // DDIC_LINUX
 
+namespace
+{
+    static std::regex const re_begin { "^(lib)?", std::regex_constants::ECMAScript | std::regex_constants::optimize };
+    static std::regex const re_end { R"((\.dll|\.so)?$)", std::regex_constants::ECMAScript | std::regex_constants::optimize };
+
+    std::string normalize_name(std::string const & name)
+    {
+        return std::regex_replace(
+            std::regex_replace(name, ::re_begin, "", std::regex_constants::format_first_only),
+            ::re_end, "", std::regex_constants::format_first_only
+        );
+    }
+}
+
 namespace ddic
 {
-    bool container::load_types(std::string const & filename)
+    bool container::load_types(std::string const & name)
     {
+        auto const filename = ::normalize_name(name);
+
 #ifdef DDIC_WINDOWS
-        // TODO: deal with the case where the filename already ends in .dll
-        std::string fullname = filename + ".dll";
-        auto lib = LoadLibraryA(fullname.c_str());
-        if (lib)
+        static std::array<std::function<HMODULE (std::string const &)>, 2> const loaders {
+            // normal dll naming (foo.dll)
+            [](std::string const & fn){
+                return LoadLibraryA((fn + ".dll").c_str());
+            },
+            // GCC style dll naming (libfoo.dll)
+            [](std::string const & fn){
+                return LoadLibraryA(("lib" + fn + ".dll").c_str());
+            },
+        };
+
+        HMODULE lib = nullptr;
+        for (auto loader : loaders)
         {
-            auto entry = (entry_point_t)GetProcAddress(lib, "ddic_register_types");
-            if (entry)
-                return entry(this);
+            lib = loader(filename);
+            if (lib)
+            {
+                auto entry = (entry_point_t)GetProcAddress(lib, "ddic_register_types");
+                if (entry)
+                    return entry(this);
+                break;
+            }
         }
 #endif // DDIC_WINDOWS
 
 #ifdef DDIC_LINUX
-        // TODO: fix this for filenames that are more complex than "foo"...
-        std::string fullname = "lib" + filename + ".so";
-        auto lib = dlopen(fullname.c_str(), RTLD_LAZY | RTLD_GLOBAL);
-        if (!lib)
+        static std::array<std::function<void * (std::string const &)>, 2> const loaders {
+            // general .so
+            [](std::string const & fn){
+                return dlopen(("lib" + fn + ".so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
+            },
+            // .so in application directory
+            [](std::string const & fn){
+                return dlopen(("./lib" + fn + ".so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
+            },
+        };
+
+        void * lib = nullptr;
+        for (auto loader : loaders)
         {
-            // explicitely try current directory
-            fullname = "./" + fullname;
-            lib = dlopen(fullname.c_str(), RTLD_LAZY | RTLD_GLOBAL);
+            lib = loader(filename);
+            if (lib)
+            {
+                auto data = (ddic_plugin_data*)dlsym(lib, "ddic_plugin_data");
+                if (data)
+                    return data->entry(this);
+                break;
+            }
         }
-            
-        if (lib)
-        {
-            auto data = (ddic_plugin_data*)dlsym(lib, "ddic_plugin_data");
-            if (data)
-                return data->entry(this);
-            else
-                std::cerr << dlerror() << std::endl;
-        }
-        else
-            std::cerr << dlerror() << std::endl;
+        std::cerr << dlerror() << std::endl;
+
 #endif // DDIC_LINUX
         
         return false;
