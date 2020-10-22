@@ -9,10 +9,10 @@
 #ifndef BINARY_EXPRESSION_HXX
 #define BINARY_EXPRESSION_HXX
 
-struct BinaryExpression
-{
-    virtual ~BinaryExpression() = default;
-    virtual int combine(int a, int b) const = 0;
+struct BinaryExpression {
+  virtual ~BinaryExpression() = default;
+
+  virtual int combine(int a, int b) const = 0;
 };
 
 #endif // BINARY_EXPRESSION_HXX

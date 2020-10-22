@@ -9,50 +9,48 @@
 
 #include <ddic.hxx>
 
-namespace
-{
-    struct IntCreator
+namespace {
+  struct IntCreator {
+    int* operator()(ddic::container& c) const
     {
-        int * operator() (ddic::container & c) const
-        {
-            return new int(23);
-        }
-    };
+      return new int(23);
+    }
+  };
 }
 
 TEST(FunctorFactory, AlwaysNewReturnsDistincObjects)
 {
-    using ::testing::Ne;
+  using ::testing::Ne;
 
-    ddic::container c;
-    ddic::functor_factory<ddic::container, int, ddic::creation_policy::always_new> factory(::IntCreator(), c);
+  ddic::container c;
+  ddic::functor_factory<ddic::container, int, ddic::creation_policy::always_new> factory(::IntCreator(), c);
 
-    auto obj1 = factory.create();
-    auto obj2 = factory.create();
+  auto obj1 = factory.create();
+  auto obj2 = factory.create();
 
-    EXPECT_THAT(obj1, Ne(obj2));
+  EXPECT_THAT(obj1, Ne(obj2));
 }
 
 TEST(FunctorFactory, AlwaysSameReturnsOneObject)
 {
-    using ::testing::Eq;
+  using ::testing::Eq;
 
-    ddic::container c;
-    ddic::functor_factory<ddic::container, int, ddic::creation_policy::always_same> factory(::IntCreator(), c);
+  ddic::container c;
+  ddic::functor_factory<ddic::container, int, ddic::creation_policy::always_same> factory(::IntCreator(), c);
 
-    auto obj1 = factory.create();
-    auto obj2 = factory.create();
+  auto obj1 = factory.create();
+  auto obj2 = factory.create();
 
-    EXPECT_THAT(obj1, Eq(obj2));
+  EXPECT_THAT(obj1, Eq(obj2));
 }
 
 TEST(FunctorFactory, ConstructsObjectsUsingFunctor)
 {
-    using ::testing::Eq;
+  using ::testing::Eq;
 
-    ddic::container c;
-    ddic::functor_factory<ddic::container, int, ddic::creation_policy::always_new> factory(::IntCreator(), c);
-    auto pn = std::static_pointer_cast<int>(factory.create());
+  ddic::container c;
+  ddic::functor_factory<ddic::container, int, ddic::creation_policy::always_new> factory(::IntCreator(), c);
+  auto pn = std::static_pointer_cast<int>(factory.create());
 
-    EXPECT_THAT(*pn, Eq(23));
+  EXPECT_THAT(*pn, Eq(23));
 }

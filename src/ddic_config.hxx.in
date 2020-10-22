@@ -5,7 +5,7 @@
  *                                                                   *
  * See the file COPYING for copying permissions.                     *
  *********************************************************************/
- 
+
 /**
  * \file ddic_config.hxx.in
  * \author Felix Bytow
@@ -22,13 +22,18 @@
 #define DDIC_VERSION "@PROJECT_VERSION@"
 
 #if defined(_WIN32)
-#   define DDIC_WINDOWS
+# define DDIC_WINDOWS
 #elif defined(__gnu_linux__)
-#   define DDIC_LINUX
+# define DDIC_LINUX
+#elif defined(__APPLE__)
+# include <TargetConditionals.h>
+# if defined(TARGET_OS_MAC) && (TARGET_OS_MAC != 0)
+#   define DDIC_MACOS
+# endif
 #endif
 
 #if defined(_MSC_VER)
-#   define DDIC_MSVC
+# define DDIC_MSVC
 #endif
 
 #endif // DDIC_CONFIG_HXX
