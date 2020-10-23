@@ -38,12 +38,12 @@ class Aggregator {
 public:
   typedef ddic::inject<BinaryExpression> autowire;
 
-  Aggregator(std::shared_ptr<BinaryExpression>&& combiner)
+  explicit Aggregator(std::shared_ptr<BinaryExpression>&& combiner)
       :combiner_(std::move(combiner))
   {
   }
 
-  int aggregate(int a) { return a; }
+  static int aggregate(int a) { return a; }
 
   int aggregate(int a, int b) { return combiner_->combine(a, b); }
 

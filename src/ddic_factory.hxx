@@ -69,14 +69,14 @@ namespace ddic {
     static_assert(std::is_default_constructible<Type>::value, "Type must be default constructible!");
 
   public:
-    virtual ~default_factory() = default; ///< Default virtual destructor.
+    ~default_factory() override = default; ///< Default virtual destructor.
 
     /**
      * \brief creates a new instance of a registered type.
      *
      * This method simply creates a new instance of the registered type everytime it is called.
      **/
-    virtual std::shared_ptr<void> create() override
+    std::shared_ptr<void> create() override
     {
       return std::make_shared<Type>();
     }
@@ -88,7 +88,7 @@ namespace ddic {
     static_assert(std::is_default_constructible<Type>::value, "Type must be default constructible!");
 
   public:
-    virtual ~default_factory() = default; ///< Default virtual destructor.
+    ~default_factory() override = default; ///< Default virtual destructor.
 
     /**
      * \brief creates a new instance of a registered type.
@@ -96,7 +96,7 @@ namespace ddic {
      * When first called, this method creates a new instance of the registered type.
      * Subsequent calls will just return the existing instance.
      **/
-    virtual std::shared_ptr<void> create() override
+    std::shared_ptr<void> create() override
     {
       // lazy creation
       if (!instance_)
@@ -131,19 +131,19 @@ namespace ddic {
      * \brief takes a prototype instance and stores it for later use.
      * \param[in] proto The prototype instance.
      */
-    prototype_factory(Type const& proto)
+    explicit prototype_factory(Type const& proto)
         :proto_(proto)
     {
     }
 
-    virtual ~prototype_factory() = default; ///< Default virtual destructor.
+    ~prototype_factory() override = default; ///< Default virtual destructor.
 
     /**
      * \brief creates a new instance of a registered type.
      *
      * This method simply creates a new instance of the registered type by copying the stored prototype.
      **/
-    virtual std::shared_ptr<void> create() override
+    std::shared_ptr<void> create() override
     {
       return std::make_shared<Type>(proto_);
     }
@@ -162,19 +162,19 @@ namespace ddic {
      * \brief takes a prototype instance and creates a copy for later use.
      * \param[in] proto The prototype instance.
      */
-    prototype_factory(Type const& proto)
+    explicit prototype_factory(Type const& proto)
         :instance_(new Type(proto))
     {
     }
 
-    virtual ~prototype_factory() = default; ///< Default virtual destructor.
+    ~prototype_factory() override = default; ///< Default virtual destructor.
 
     /**
      * \brief creates a new instance of a registered type.
      *
      * This method returns a pointer to a copied prototype instance.
      **/
-    virtual std::shared_ptr<void> create() override
+    std::shared_ptr<void> create() override
     {
       return instance_;
     }
@@ -213,14 +213,14 @@ namespace ddic {
     {
     }
 
-    virtual ~functor_factory() = default; ///< Default virtual destructor.
+    ~functor_factory() override = default; ///< Default virtual destructor.
 
     /**
      * \brief creates a new instance of a registered type.
      *
      * This method calls the creator function object and returns the pointer to the newly created object.
      **/
-    virtual std::shared_ptr<void> create() override
+    std::shared_ptr<void> create() override
     {
       return std::shared_ptr<Type>(fn_(c_));
     }
@@ -244,7 +244,7 @@ namespace ddic {
     {
     }
 
-    virtual ~functor_factory() = default; ///< Default virtual destructor.
+    ~functor_factory() override = default; ///< Default virtual destructor.
 
     /**
      * \brief creates a new instance of a registered type.
@@ -252,7 +252,7 @@ namespace ddic {
      * When first called, this method calls the creator function object to create a new object of the registered type.
      * Subsequent calls simply return a pointer to that object.
      **/
-    virtual std::shared_ptr<void> create() override
+    std::shared_ptr<void> create() override
     {
       if (!instance_)
         instance_.reset(fn_(c_));

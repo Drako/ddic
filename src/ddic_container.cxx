@@ -33,9 +33,9 @@ struct ddic_plugin_data {
 #endif // DDIC_LINUX || DDIC_MACOS
 
 namespace {
-  static std::regex const re_begin{"^(lib)?", std::regex_constants::ECMAScript | std::regex_constants::optimize};
-  static std::regex const re_end{R"((\.dll|\.so)?$)",
-                                 std::regex_constants::ECMAScript | std::regex_constants::optimize};
+  std::regex const re_begin{"^(lib)?", std::regex_constants::ECMAScript | std::regex_constants::optimize};
+  std::regex const re_end{R"((\.dll|\.so|\.dylib)?$)",
+                          std::regex_constants::ECMAScript | std::regex_constants::optimize};
 
   std::string normalize_name(std::string const& name)
   {
@@ -81,10 +81,22 @@ namespace ddic {
         [](std::string const& fn) {
           return dlopen(("lib"+fn+".so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
         },
+#if defined(DDIC_MACOS)
+        // general .dylib
+        [](std::string const& fn) {
+          return dlopen(("lib"+fn+".dylib").c_str(), RTLD_LAZY | RTLD_GLOBAL);
+        },
+#endif // DDIC_MACOS
         // .so in application directory
         [](std::string const& fn) {
           return dlopen(("./lib"+fn+".so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
         },
+#if defined(DDIC_MACOS)
+        // .dylib in application directory
+        [](std::string const& fn) {
+          return dlopen(("./lib"+fn+".so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
+        },
+#endif // DDIC_MACOS
     };
 
     void* lib = nullptr;

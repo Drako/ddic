@@ -11,9 +11,9 @@
 class Adder
     : public BinaryExpression {
 public:
-  virtual ~Adder() = default;
+  ~Adder() override = default;
 
-  virtual int combine(int a, int b) const
+  int combine(int a, int b) const override
   {
     return a+b;
   }

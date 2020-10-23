@@ -43,9 +43,9 @@ namespace ddic {
      * \param[in] p Pointer to the factory for the registered type.
      * \param[out] c Container used to register aliases.
      */
-    register_proxy(std::shared_ptr<abstract_factory> const& p, container& c);
+    register_proxy(abstract_factory* p, container& c);
 
-    register_proxy(register_proxy&& src); ///< Move constructor
+    register_proxy(register_proxy&& src) noexcept; ///< Move constructor
 
     /**
      * \brief Registers an alias for the registered type.
@@ -66,7 +66,7 @@ namespace ddic {
     }
 
   private:
-    std::shared_ptr<abstract_factory> p_; ///< A pointer to the factory for the registered type.
+    abstract_factory* p_; ///< A pointer to the factory for the registered type.
     container& c_; ///< The container used to register the type.
   };
 }
