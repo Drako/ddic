@@ -75,29 +75,41 @@ namespace ddic {
     }
 #endif // DDIC_WINDOWS
 
-#if defined(DDIC_LINUX) || defined(DDIC_MACOS)
+#ifdef DDIC_LINUX
     static std::array<std::function<void*(std::string const&)>, 2> const loaders{
         // general .so
         [](std::string const& fn) {
           return dlopen(("lib"+fn+".so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
         },
-#if defined(DDIC_MACOS)
-        // general .dylib
-        [](std::string const& fn) {
-          return dlopen(("lib"+fn+".dylib").c_str(), RTLD_LAZY | RTLD_GLOBAL);
-        },
-#endif // DDIC_MACOS
         // .so in application directory
         [](std::string const& fn) {
           return dlopen(("./lib"+fn+".so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
         },
-#if defined(DDIC_MACOS)
+    };
+#endif // DDIC_LINUX
+
+#ifdef DDIC_MACOS
+    static std::array<std::function<void*(std::string const&)>, 4> const loaders{
+        // general .so
+        [](std::string const& fn) {
+          return dlopen(("lib"+fn+".so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
+        },
+        // general .dylib
+        [](std::string const& fn) {
+          return dlopen(("lib"+fn+".dylib").c_str(), RTLD_LAZY | RTLD_GLOBAL);
+        },
+        // .so in application directory
+        [](std::string const& fn) {
+          return dlopen(("./lib"+fn+".so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
+        },
         // .dylib in application directory
         [](std::string const& fn) {
           return dlopen(("./lib"+fn+".so").c_str(), RTLD_LAZY | RTLD_GLOBAL);
         },
-#endif // DDIC_MACOS
     };
+#endif // DDIC_MACOS
+
+#if defined(DDIC_LINUX) || defined(DDIC_MACOS)
 
     void* lib = nullptr;
     for (auto const& loader : loaders) {
